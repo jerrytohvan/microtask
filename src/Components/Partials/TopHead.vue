@@ -4,8 +4,8 @@
         <img :alt="app.displayName" class="app-icon" src="https://console.dialogflow.com/api-client/assets/img/logo-short.png" v-else />
         
         <div class="app-info">
-            <div class="app-name">{{app.displayName}}</div>
-            <div class="app-poweredby">Built with <a target="_blank" rel="noopener noreferrer" href="https://dialogflow.cloud.ushakov.co">Dialogflow Gateway</a></div>
+            <div class="app-name">Microtask</div>
+            <div class="app-poweredby">Built for <a target="_blank" rel="noopener noreferrer" href="https://sis.smu.edu.sg/programmes/undergraduate/beyond/rxu">Singapore Management University-RXU</a></div>
         </div>
     </header>
 </template>

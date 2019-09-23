@@ -5,10 +5,10 @@
         <img :alt="app.displayName" class="app-icon" src="https://console.dialogflow.com/api-client/assets/img/logo-short.png" v-else />
         
         <!-- Agent Title -->
-        <h1 class="app-title">{{(config.i18n[sel_lang] && config.i18n[sel_lang].welcomeTitle) || config.i18n[config.app.fallback_lang].welcomeTitle}} {{app.displayName}}</h1>
+        <h1 class="app-title">Welcome to Microtask</h1>
 
         <!-- Agent Description -->
-        <p class="app-description">{{app.description}}</p>
+        <p class="app-description">SMU-HCI</p>
         
         <!-- Language picker, when your Agent supports more than one Language -->
         <div v-if="app.supportedLanguageCodes && app.supportedLanguageCodes.length > 0">
