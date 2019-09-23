@@ -2,7 +2,10 @@ import '@babel/polyfill' // <- babel Polyfills
 import 'whatwg-fetch' // <- Fetch API Polyfill
 
 import Vue from 'vue'
+
 import App from './Components/App/App.vue'
+
+import { VueHammer } from 'vue2-hammer'
 
 import config from './../config'
 import { register_service_worker } from './utils'
@@ -32,7 +35,11 @@ Vue.prototype.lang = () => {
     }
 }
 
+Vue.use(VueHammer)
+
 new Vue({
     el: '#app',
     render: h => h(App)
 }).$mount('#app')
+
+

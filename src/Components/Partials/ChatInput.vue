@@ -1,6 +1,19 @@
+
+
 <template>
     <div class="bottomchat">
         <div class="container">
+            <!-- MODIFICATION: Hover an invisible gesture DIV  -->
+            <!--
+            
+
+<div v-hammer:swipe="onSwipe"  class="gesture-container" >
+                Swpie me!
+            </div>
+             -->
+            
+
+
             <!-- Here are the suggestions -->
             <div class="suggestions"><slot></slot></div>
             <div class="flexible">
@@ -30,6 +43,14 @@
     left: 0
     width: 100%
     background-color: var(--background)
+
+.gesture-container
+    padding: 8px
+    left: 0
+    width: 100%
+    height: 300px
+    background-color: yellow
+  
 
 .flexible
     display: flex
@@ -123,6 +144,7 @@ export default {
                 this.recognition.abort() // <- if user stops the recognition, abort it (in V1 this prevented users from starting a new recording)
             }
         }
+      
     },
     methods: {
         submit(){

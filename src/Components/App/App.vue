@@ -2,7 +2,7 @@
     <main id="app">
         <!-- TopHead is the header with the information about the app -->
         <TopHead v-if="app && messages.length > 0" :app="app"></TopHead>
-        <section class="container chat-container">
+        <section class="container chat-container" v-hammer:swipe="onSwipe">
             <!-- Error component is for displaying errors -->
             <Error v-if="error" :error="error"></Error>
 
@@ -314,6 +314,51 @@ import * as uuidv1 from 'uuid/v1'
 import { set_seo } from './../../utils'
 import './Theme.sass'
 
+
+/*
+Set function for detecting  question and swapping options (SURVEY TASKS):
+
+Alright got it $person! Let's jump in to the survey task! 
+First question, which of the following social media do you currently have? You may choose more than one. 
+Options: Google+, MySpace, Bebo, Tagged, Facebook, Twitter, Instagram or Others?
+
+Great, thank you! Next, second question. in a typical week how likely are you to use social networking websites? 
+Option: Extremely likely, very likely, moderate, slight likely, or not at all?
+
+Great! Third question. 
+In a typical week which of the following social networking websites do you use most often? 
+Option: Facebook, Instagram, Twitter, Bebo, Tagged, MySpace, Google+, Google Hangouts, or other social network that you can mention?
+
+Next question. Fourth question.
+In a typical week, about how much time do you spend using social networking websites? How many hours or minutes?
+
+Alright, fifth question. About how many "friends" do you currently have on social networking websites?
+
+Alright, moving on. Sixth question. 
+About how many of your "friends" on social networking websites have you met in person? 
+Option: All of them, most of them, about half of them, a few of them, or none of them?
+
+Got it!  Next, seventh question. 
+If you could use only one of the following social networking services, which would you use? 
+Options: Facebook, Instagram, Tagged, Google+, Bebo, MySpace, or Twitter?
+
+    Got it, last question! 
+From one to ten, scale how satisfied are you with your most used social network you have chosen earlier?
+*/
+
+//QUESTION 1,2,3,6,7
+var options = [
+  ["Google+", "MySpace", "Bebo", "Tagged", "Facebook", "Twitter", "Instagram", "for others, please use the text or mic input"],
+  ["Extremely likely", "very likely", "moderate likely", "slight likely", "not at all"],
+  ["Google+", "MySpace", "Bebo", "Tagged", "Facebook", "Twitter", "Instagram", "for others, please use the text or mic input"],
+  ["All of them", "most of them", "about half of them", "a few of them", "none of them"],
+  ["Facebook", "Instagram", "Tagged", "Google+", "Bebo", "MySpace", "Twitter"]
+]
+
+var curr_option = ""
+var index_option = 0
+var ques_no = 0
+
 export default {
     name: 'app',
     components: {
@@ -415,6 +460,14 @@ export default {
         /* This function is triggered, when new messages arrive */
         messages(messages){
             if(this.history()) localStorage.setItem('message_history', JSON.stringify(messages)) // <- Save history if the feature is enabled
+            
+
+            /* MODIFICATION: Retrieve options from messages, add interaction from */ 
+            console.log(messages);
+
+            
+            /* MODIFICATION: Set gesture options and retrieve answer */ 
+
         },
         /* This function is triggered, when request is started or finished */
         loading(){
@@ -477,13 +530,166 @@ export default {
                     if(response.queryResult.webhookPayload.google[component].simpleResponse) text = response.queryResult.webhookPayload.google[component].simpleResponse.textToSpeech
                 }
             }
-
+            this.setOptions(text)
             let speech = new SpeechSynthesisUtterance(text)
             speech.voiceURI = this.config.app.voice
 
             /* This "hack" is used to format our lang format, to some other lang format (example: en -> en_EN). Mainly for Safari, Firefox and Edge */
             speech.lang = this.lang() + '-' + this.lang().toUpperCase()
             if(!this.muted) window.speechSynthesis.speak(speech) // <- if app is not muted, speak out the speech
+          
+             /* MODIFICATION: Post-speech, buffer to audio signal and enable speech and gesture input  */ 
+            
+
+        }, 
+        /* MODIFICATION: Generate gesture based option and speech
+        
+        var curr_option = ""
+        var index_option = 0
+        var ques_no = 0
+        */
+
+
+        onSwipe(event) {
+            /* MODIFICATION: Swap option & trigger speech  */
+            //alert(event)
+            if (event.direction == 2) {
+                
+                //previous option
+                if(ques_no != 0 && curr_option!= ""){
+                    //if option index is 0, move to last option
+                    var question_options_index = -1
+
+                    //make sure its only for questions 
+                    switch(ques_no) {
+                        case 1:
+                            // first ques
+                            question_options_index = 0
+                            break;
+                        case 2:
+                            // second
+                            question_options_index = 1
+                            break;
+                        case 3:
+                            // second
+                            question_options_index = 2
+                            break;
+                        case 6:
+                            // second
+                            question_options_index = 3
+                            break;
+                        case 7:
+                            // second
+                            question_options_index = 4
+                            break;
+                    }
+                    
+                    if(question_options_index != -1){
+                        if(index_option == 0){
+                            index_option = options[question_options_index].length-1
+                        }else{
+                            index_option -= 1
+                        }
+                        curr_option = options[question_options_index][index_option]
+                    }else{
+                        curr_option = "Please use the voice or text input to record your answer."
+                    }
+                    console.log(curr_option)
+
+                    //vocalise
+                    let speech = new SpeechSynthesisUtterance(curr_option)
+                    speech.voiceURI = this.config.app.voice
+
+                    /* This "hack" is used to format our lang format, to some other lang format (example: en -> en_EN). Mainly for Safari, Firefox and Edge */
+                    speech.lang = this.lang() + '-' + this.lang().toUpperCase()
+                    if(!this.muted) window.speechSynthesis.speak(speech) // <- if app is not muted, speak out the speech
+                }
+                
+            }else if (event.direction == 4) {
+                //next option
+                if(ques_no != 0 && this.curr_option!= ""){
+                    //if option index is 0, move to last option
+
+                    var question_options_index = -1
+                    //make sure its only for questions 
+                    switch(ques_no) {
+                        case 1:
+                            // first ques
+                            question_options_index = 0
+                            break;
+                        case 2:
+                            // second
+                            question_options_index = 1
+                            break;
+                        case 3:
+                            // second
+                            question_options_index = 2
+                            break;
+                        case 6:
+                            // second
+                            question_options_index = 3
+                            break;
+                        case 7:
+                            // second
+                            question_options_index = 4
+                            break;
+                    }
+                    if(question_options_index != -1){
+                         //if option index is 0, move to last option
+                        if(index_option == options[question_options_index].length-1){
+                            //back to start
+                            index_option = 0
+                        }else{
+                            index_option += 1
+                        }  
+                        curr_option = options[question_options_index][index_option]
+                    }else{
+                        curr_option = "Please use the voice or text input to record your answer."
+                    }
+                    console.log(curr_option)
+
+                    //vocalise
+                    let speech = new SpeechSynthesisUtterance(curr_option)
+                    speech.voiceURI = this.config.app.voice
+
+                    /* This "hack" is used to format our lang format, to some other lang format (example: en -> en_EN). Mainly for Safari, Firefox and Edge */
+                    speech.lang = this.lang() + '-' + this.lang().toUpperCase()
+                    if(!this.muted) window.speechSynthesis.speak(speech) // <- if app is not muted, speak out the speech
+                }
+            }
+        },
+        //QUESTION 1,2,3,6,7
+        setOptions(text){
+            text = text.toLowerCase() 
+            if(text.includes("first")){
+                ques_no = 1
+                curr_option = options[0][index_option]
+                console.log("first question")
+            }else if(text.includes("second")){
+                ques_no = 2
+                curr_option = options[1][index_option]
+                console.log("second question")
+            }else if(text.includes("third")){
+                ques_no = 3
+                curr_option = options[2][index_option]
+                console.log("third question")
+            }else if(text.includes("fourth")){
+                ques_no = 4
+            }else if(text.includes("fifth")){
+                ques_no = 5
+            }else if(text.includes("sixth")){
+                ques_no = 6
+                curr_option = options[3][index_option]
+                console.log("sixth question")
+            }else if(text.includes("seventh")){
+                ques_no = 7
+                curr_option = options[4][index_option]
+                console.log("seventh question")
+            }else if(text.includes("last")){
+                ques_no = 8
+            }else{
+                ques_no = 0
+            }
         }
     }
 }
