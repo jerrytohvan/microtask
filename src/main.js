@@ -42,4 +42,7 @@ new Vue({
     render: h => h(App)
 }).$mount('#app')
 
-
+// change the threshold for all swipe recognizers
+VueHammer.config.tap = {
+    interval: 500
+};

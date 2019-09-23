@@ -4,16 +4,6 @@
     <div class="bottomchat">
         <div class="container">
             <!-- MODIFICATION: Hover an invisible gesture DIV  -->
-            <!--
-            
-
-<div v-hammer:swipe="onSwipe"  class="gesture-container" >
-                Swpie me!
-            </div>
-             -->
-            
-
-
             <!-- Here are the suggestions -->
             <div class="suggestions"><slot></slot></div>
             <div class="flexible">

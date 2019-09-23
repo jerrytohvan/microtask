@@ -2,7 +2,7 @@
     <main id="app">
         <!-- TopHead is the header with the information about the app -->
         <TopHead v-if="app && messages.length > 0" :app="app"></TopHead>
-        <section class="container chat-container" v-hammer:swipe="onSwipe">
+        <section class="container chat-container" v-hammer:swipe="onSwipe" v-hammer:tap="onDoubleTap">
             <!-- Error component is for displaying errors -->
             <Error v-if="error" :error="error"></Error>
 
@@ -690,6 +690,10 @@ export default {
             }else{
                 ques_no = 0
             }
+        },
+        onDoubleTap(event){
+            // alert("double tap")
+            console.log(event)
         }
     }
 }
