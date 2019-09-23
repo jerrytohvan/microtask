@@ -1,15 +1,17 @@
 {
-  "name": "dialogflow-web-v2",
-  "description": "Dialogflow unofficial Progressive Web App",
+  "name": "Microtask",
+  "description": "SMU - RXU",
   "version": "2.6.1",
   "author": "MishUshakov",
   "private": true,
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack-dev-server --open --hot",
-    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
+    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
+    "start": "node server.js"
   },
   "dependencies": {
     "@babel/polyfill": "^7.2.5",
+    "express": "^4.17.1",
     "langs": "^2.0.0",
     "uuid": "^3.3.2",
     "vue": "^2.5.21",
