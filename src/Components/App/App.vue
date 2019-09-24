@@ -3,6 +3,8 @@
         <!-- TopHead is the header with the information about the app -->
         <TopHead v-if="app && messages.length > 0" :app="app"></TopHead>
         <section class="container chat-container" v-hammer:swipe="onSwipe" v-hammer:tap="onDoubleTap">
+            
+
             <!-- Error component is for displaying errors -->
             <Error v-if="error" :error="error"></Error>
 
@@ -355,9 +357,17 @@ var options = [
   ["Facebook", "Instagram", "Tagged", "Google+", "Bebo", "MySpace", "Twitter"]
 ]
 
+var sentiment_options = ["positive", "negative", "neutral", "none of them"]
+
 var curr_option = ""
 var index_option = 0
 var ques_no = 0
+/*
+    0 = survey tasks
+    1 = sentiment analysis
+    2 = audio transcribtion
+*/
+var type = -1
 
 export default {
     name: 'app',
@@ -463,7 +473,6 @@ export default {
             
 
             /* MODIFICATION: Retrieve options from messages, add interaction from */ 
-            console.log(messages);
 
             
             /* MODIFICATION: Set gesture options and retrieve answer */ 
@@ -552,50 +561,62 @@ export default {
 
         onSwipe(event) {
             /* MODIFICATION: Swap option & trigger speech  */
-            //alert(event)
+         
             if (event.direction == 2) {
-                
+        
                 //previous option
-                if(ques_no != 0 && curr_option!= ""){
-                    //if option index is 0, move to last option
-                    var question_options_index = -1
 
-                    //make sure its only for questions 
-                    switch(ques_no) {
-                        case 1:
-                            // first ques
-                            question_options_index = 0
-                            break;
-                        case 2:
-                            // second
-                            question_options_index = 1
-                            break;
-                        case 3:
-                            // second
-                            question_options_index = 2
-                            break;
-                        case 6:
-                            // second
-                            question_options_index = 3
-                            break;
-                        case 7:
-                            // second
-                            question_options_index = 4
-                            break;
-                    }
-                    
-                    if(question_options_index != -1){
+                if(ques_no != 0 && curr_option!= ""){
+
+                    if(type == 1){
+                        //if option index is 0, move to last option
+                        var question_options_index = -1
+
+                        //make sure its only for questions 
+                        switch(ques_no) {
+                            case 1:
+                                // first ques
+                                question_options_index = 0
+                                break;
+                            case 2:
+                                // second
+                                question_options_index = 1
+                                break;
+                            case 3:
+                                // second
+                                question_options_index = 2
+                                break;
+                            case 6:
+                                // second
+                                question_options_index = 3
+                                break;
+                            case 7:
+                                // second
+                                question_options_index = 4
+                                break;
+                        }
+                        
+                        if(question_options_index != -1){
+                            if(index_option == 0){
+                                index_option = options[question_options_index].length-1
+                            }else{
+                                index_option -= 1
+                            }
+                            curr_option = options[question_options_index][index_option]
+                        }else{
+                            curr_option = "Please use the voice or text input to record your answer."
+                        }
+
+                    }else if (type == 2){
                         if(index_option == 0){
-                            index_option = options[question_options_index].length-1
+                            index_option = sentiment_options.length-1
                         }else{
                             index_option -= 1
                         }
-                        curr_option = options[question_options_index][index_option]
-                    }else{
-                        curr_option = "Please use the voice or text input to record your answer."
+                        curr_option = sentiment_options[index_option]
                     }
-                    console.log(curr_option)
 
+                   
                     //vocalise
                     let speech = new SpeechSynthesisUtterance(curr_option)
                     speech.voiceURI = this.config.app.voice
@@ -609,44 +630,53 @@ export default {
                 //next option
                 if(ques_no != 0 && this.curr_option!= ""){
                     //if option index is 0, move to last option
-
-                    var question_options_index = -1
-                    //make sure its only for questions 
-                    switch(ques_no) {
-                        case 1:
-                            // first ques
-                            question_options_index = 0
-                            break;
-                        case 2:
-                            // second
-                            question_options_index = 1
-                            break;
-                        case 3:
-                            // second
-                            question_options_index = 2
-                            break;
-                        case 6:
-                            // second
-                            question_options_index = 3
-                            break;
-                        case 7:
-                            // second
-                            question_options_index = 4
-                            break;
-                    }
-                    if(question_options_index != -1){
-                         //if option index is 0, move to last option
-                        if(index_option == options[question_options_index].length-1){
+                    if(type == 1){
+                        var question_options_index = -1
+                        //make sure its only for questions 
+                        switch(ques_no) {
+                            case 1:
+                                // first ques
+                                question_options_index = 0
+                                break;
+                            case 2:
+                                // second
+                                question_options_index = 1
+                                break;
+                            case 3:
+                                // second
+                                question_options_index = 2
+                                break;
+                            case 6:
+                                // second
+                                question_options_index = 3
+                                break;
+                            case 7:
+                                // second
+                                question_options_index = 4
+                                break;
+                        }
+                        if(question_options_index != -1){
+                            //if option index is 0, move to last option
+                            if(index_option == options[question_options_index].length-1){
+                                //back to start
+                                index_option = 0
+                            }else{
+                                index_option += 1
+                            }  
+                            curr_option = options[question_options_index][index_option]
+                        }else{
+                            curr_option = "Please use the voice or text input to record your answer."
+                        }
+                    }else if(type == 2){
+                        if(index_option == sentiment_options.length-1){
                             //back to start
                             index_option = 0
                         }else{
                             index_option += 1
                         }  
-                        curr_option = options[question_options_index][index_option]
-                    }else{
-                        curr_option = "Please use the voice or text input to record your answer."
+                        curr_option = sentiment_options[index_option]
                     }
-                    console.log(curr_option)
+                   
 
                     //vocalise
                     let speech = new SpeechSynthesisUtterance(curr_option)
@@ -660,40 +690,71 @@ export default {
         },
         //QUESTION 1,2,3,6,7
         setOptions(text){
+            //initialise based on responses
             text = text.toLowerCase() 
-            if(text.includes("first")){
-                ques_no = 1
-                curr_option = options[0][index_option]
-                console.log("first question")
-            }else if(text.includes("second")){
-                ques_no = 2
-                curr_option = options[1][index_option]
-                console.log("second question")
-            }else if(text.includes("third")){
-                ques_no = 3
-                curr_option = options[2][index_option]
-                console.log("third question")
-            }else if(text.includes("fourth")){
-                ques_no = 4
-            }else if(text.includes("fifth")){
-                ques_no = 5
-            }else if(text.includes("sixth")){
-                ques_no = 6
-                curr_option = options[3][index_option]
-                console.log("sixth question")
-            }else if(text.includes("seventh")){
-                ques_no = 7
-                curr_option = options[4][index_option]
-                console.log("seventh question")
-            }else if(text.includes("last")){
-                ques_no = 8
-            }else{
-                ques_no = 0
+
+            if(type == -1 && text.includes("selected")){
+                if(text.includes("survey")){
+                    type = 1
+                }else if(text.includes("sentiment")){
+                    type = 2
+                }else if(text.includes("audio")){
+                    type = 3
+                }
             }
+
+            if(type == 1){
+                if(text.includes("first")){
+                    ques_no = 1
+                    curr_option = options[0][index_option]
+                }else if(text.includes("second")){
+                    ques_no = 2
+                    curr_option = options[1][index_option]
+                }else if(text.includes("third")){
+                    ques_no = 3
+                    curr_option = options[2][index_option]
+                }else if(text.includes("fourth")){
+                    ques_no = 4
+                }else if(text.includes("fifth")){
+                    ques_no = 5
+                }else if(text.includes("sixth")){
+                    ques_no = 6
+                    curr_option = options[3][index_option]
+                }else if(text.includes("seventh")){
+                    ques_no = 7
+                    curr_option = options[4][index_option]
+                }else if(text.includes("last")){
+                    ques_no = 8
+                }else{
+                    ques_no = 0
+                }
+            }else if(type == 2){
+                curr_option = sentiment_options[0]
+                ques_no += 1
+            }
+           
         },
         onDoubleTap(event){
-            // alert("double tap")
             console.log(event)
+            if(event.tapCount == 2){
+
+                curr_option = curr_option.toLowerCase()
+
+                //if others selected repeat 
+                if(!curr_option.includes("others")){
+                    this.send(curr_option)
+                    curr_option += " selected."
+                }
+
+                //vocalise
+                let speech = new SpeechSynthesisUtterance(curr_option)
+                speech.voiceURI = this.config.app.voice
+
+                /* This "hack" is used to format our lang format, to some other lang format (example: en -> en_EN). Mainly for Safari, Firefox and Edge */
+                speech.lang = this.lang() + '-' + this.lang().toUpperCase()
+                if(!this.muted) window.speechSynthesis.speak(speech) // <- if app is not muted, speak out the speech
+       
+            }
         }
     }
 }
