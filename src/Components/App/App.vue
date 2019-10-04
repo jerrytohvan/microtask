@@ -373,12 +373,6 @@ var ques_no = 0
 // var pgClient = new pgC.Client(connectionString)
 // pgClient.connect()
 
-const { Client } = require('pg')
-const client = new Client("postgres://zkqrjjmhmflajb:668fc205ca41f1a598c98fed7b9749bd16162ee9afbdcb10ea5d6fba3839b05f@ec2-23-21-94-99.compute-1.amazonaws.com:5432/d9tnnkmkdqefr5")
-client.connect()
-const res = client.query('SELECT * from users')
-console.log(res) 
-client.end()
 
 /*
 DB Info:
