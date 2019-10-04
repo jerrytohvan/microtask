@@ -118,9 +118,13 @@ export default {
                 /* When value is true, start voice recognition */
                 this.recognition.start()
                 this.recognition.onresult = (event) => {
+                    console.log(event)
+
                     for (let i = event.resultIndex; i < event.results.length; ++i){
                         this.query = event.results[i][0].transcript // <- push results to the Text input
                     }
+                     console.log(this.query)
+
                 }
 
                 this.recognition.onend = () => {
