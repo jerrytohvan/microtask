@@ -316,6 +316,8 @@ import * as uuidv1 from 'uuid/v1'
 import { set_seo } from './../../utils'
 import './Theme.sass'
 
+// import pg from 'pg'
+
 
 /*
 Set function for detecting  question and swapping options (SURVEY TASKS):
@@ -362,7 +364,40 @@ var sentiment_options = ["positive", "negative", "neutral", "none of them"]
 var curr_option = ""
 var index_option = 0
 var ques_no = 0
+
+// var user_id = -1
+// var session_id = -1
+
+// var pgC = require('pg')
+// var connectionString = "postgres://zkqrjjmhmflajb:668fc205ca41f1a598c98fed7b9749bd16162ee9afbdcb10ea5d6fba3839b05f@ec2-23-21-94-99.compute-1.amazonaws.com:5432/d9tnnkmkdqefr5"
+// var pgClient = new pgC.Client(connectionString)
+// pgClient.connect()
+
+const { Client } = require('pg')
+const client = new Client("postgres://zkqrjjmhmflajb:668fc205ca41f1a598c98fed7b9749bd16162ee9afbdcb10ea5d6fba3839b05f@ec2-23-21-94-99.compute-1.amazonaws.com:5432/d9tnnkmkdqefr5")
+client.connect()
+const res = client.query('SELECT * from users')
+console.log(res) 
+client.end()
+
 /*
+DB Info:
+- If ask name not in DB (Create new user).
+    At every new interaction create new session tagged to a user.
+
+- At every interaction, user responses are all logged to detect difficult 
+
+
+- How do you know task are completed and correct validation? reply has no "sorry" -> update DB
+- Detecting start session and stop session (properly defined or when session restarts?)
+
+
+
+*/
+
+
+/*
+TYPE
     0 = survey tasks
     1 = sentiment analysis
     2 = audio transcribtion
@@ -539,6 +574,7 @@ export default {
                     if(response.queryResult.webhookPayload.google[component].simpleResponse) text = response.queryResult.webhookPayload.google[component].simpleResponse.textToSpeech
                 }
             }
+            console.log(text)
             this.setOptions(text)
             let speech = new SpeechSynthesisUtterance(text)
             speech.voiceURI = this.config.app.voice
@@ -755,6 +791,27 @@ export default {
                 if(!this.muted) window.speechSynthesis.speak(speech) // <- if app is not muted, speak out the speech
        
             }
+        },
+        saveToDB(type, response, ques_no, session_id){
+
+        },
+        checkSession(){
+            // var query = pgClient.query("SELECT * from users")
+            // query.on("row", function(row,result){
+            //     result.addRow(row);
+            //     console.log(result)
+            // })
+            // pgClient.end()
+
+
+
+            //if user_id is -1, check if user is in DB, if not create a new one. If yes get user_id & allocate new session ID.
+
+
+
+            //if session id is -1, create new session
+
+
         }
     }
 }
