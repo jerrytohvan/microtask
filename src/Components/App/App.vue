@@ -713,7 +713,7 @@ export default {
         //QUESTION 1,2,3,6,7
         setOptions(text){
             //initialise based on responses
-            text = text.toLowerCase() 
+            text = text.toLowerCase()
 
             if(type == -1 && text.includes("selected")){
                 if(text.includes("survey")){
